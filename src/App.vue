@@ -7,8 +7,13 @@
 
 <script type="text/ecmascript-6">
   import FooterGuide from './components/FooterGuide/FooterGuide.vue'
+  import {} from './api'
 
   export default {
+    async mounted(){
+
+    },
+
     components:{
       FooterGuide
     }

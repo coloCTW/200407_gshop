@@ -7,8 +7,18 @@
 
 <script type="text/ecmascript-6">
   import FooterGuide from './components/FooterGuide/FooterGuide.vue'
+  import {mapActions} from 'vuex'
 
   export default {
+    mounted(){
+      //this.$store.dispatch('getAddress')
+      this.getAddress()
+    },
+
+    methods:{
+      ...mapActions(['getAddress'])
+    },
+
     components:{
       FooterGuide
     }

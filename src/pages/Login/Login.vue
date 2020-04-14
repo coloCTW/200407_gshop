@@ -13,14 +13,14 @@
           <form>
             <div :class="{on:loginWay}">
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
+                <input type="text" maxlength="11" placeholder="手机号" v-model="phone">
                 <button :disabled="!rightPhone" class="get_verification"
                          :class="{right_phone:rightPhone}" @click.prevent="getCode">
                   {{computeTime>0 ? `已发送${computeTime}`: '获取验证码'}}
                 </button>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="验证码">
+                <input type="text" maxlength="8" placeholder="验证码" v-model="code">
               </section>
               <section class="login_hint">
                 温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -30,7 +30,7 @@
             <div :class="{on:!loginWay}">
               <section>
                 <section class="login_message">
-                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                  <input type="text" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
                 </section>
                 <section class="login_verification">
                   <input type="text" maxlength="8" placeholder="密码" v-model="pwd" v-if="showPwd">
@@ -41,12 +41,12 @@
                   </div>
                 </section>
                 <section class="login_message">
-                  <input type="text" maxlength="11" placeholder="验证码">
+                  <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
                   <img class="get_verification" src="./images/captcha.svg" alt="captcha">
                 </section>
               </section>
             </div>
-            <button class="login_submit">登录</button>
+            <button class="login_submit" @click.prevent="check">登录</button>
           </form>
           <a href="javascript:;" class="about_us">关于我们</a>
         </div>
@@ -54,11 +54,13 @@
           <i class="iconfont icon-jiantou2"></i>
         </a>
       </div>
+      <AlertTip v-show="alertShow" :alertText="alertText" @closeTip="closeTip"/>
     </section>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import AlertTip from '../../components/AlretTip/AlertTip.vue'
   export default{
     data(){
       return{
@@ -66,9 +68,18 @@
         computeTime:0,  //发送验证码之后的冷却时间
         showPwd:false,
         phone:'',
-        pwd:''
+        code:'',
+        name:'',
+        pwd:'',
+        captcha:'',
+        alertShow:false,
+        alertText:''
       }
     },
+    components:{
+      AlertTip
+    },
+
     computed:{
       rightPhone(){
         return /^1\d{10}$/.test(this.phone)
@@ -87,6 +98,34 @@
           },1000)
         }
         //发送ajax请求
+      },
+      showAlert(text){
+        this.alertShow = true
+        this.alertText = text
+      },
+      check(){//前台验证表单数据
+        if(this.loginWay){//短信登录
+          const {phone,rightPhone,code} = this
+          if(!rightPhone){
+            this.showAlert('手机格式不正确')
+          }else if(!/^\d{6}$/.test(code)){
+            //验证码必须是6位
+            this.showAlert('验证码格式不正确')
+          }
+        }else{//密码登录
+          const {name,pwd,captcha} = this
+          if(!name){
+            this.showAlert('用户名必须指定')
+          }else if(!pwd){
+            this.showAlert('密码必须指定')
+          }else if(!captcha){
+            this.showAlert('验证码必须指定')
+          }
+        }
+      },
+      closeTip(){
+        this.alertShow = false
+        this.alertText = ''
       }
     }
   }

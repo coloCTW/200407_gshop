@@ -42,7 +42,7 @@
                 </section>
                 <section class="login_message">
                   <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                  <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                  <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha">
                 </section>
               </section>
             </div>
@@ -86,6 +86,7 @@
       }
     },
     methods:{
+      //短信登录获取验证码
       getCode(){
         //倒计时
         if(!this.computeTime){
@@ -99,10 +100,12 @@
         }
         //发送ajax请求
       },
+      //提示框
       showAlert(text){
         this.alertShow = true
         this.alertText = text
       },
+      //前台验证表单
       check(){//前台验证表单数据
         if(this.loginWay){//短信登录
           const {phone,rightPhone,code} = this
@@ -123,9 +126,14 @@
           }
         }
       },
+      //关闭提示框
       closeTip(){
         this.alertShow = false
         this.alertText = ''
+      },
+      //密码登录获取验证码
+      getCaptcha(event){
+        event.target.src = 'http://localhost:4000/captcha?time=' + Date.now()
       }
     }
   }

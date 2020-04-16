@@ -46,7 +46,7 @@
                 </section>
               </section>
             </div>
-            <button class="login_submit" @click.prevent="check">登录</button>
+            <button class="login_submit" @click.prevent="login">登录</button>
           </form>
           <a href="javascript:;" class="about_us">关于我们</a>
         </div>
@@ -61,6 +61,7 @@
 
 <script type="text/ecmascript-6">
   import AlertTip from '../../components/AlretTip/AlertTip.vue'
+  import {reqPwdLogin, reqSendCode, reqSmsLogin} from '../../api'
   export default{
     data(){
       return{
@@ -87,18 +88,27 @@
     },
     methods:{
       //短信登录获取验证码
-      getCode(){
+      async getCode(){
         //倒计时
         if(!this.computeTime){
           this.computeTime = 30
-          const intervalId = setInterval(() => {
+          this.intervalId = setInterval(() => {
             this.computeTime--
             if(this.computeTime<=0){
-              clearInterval(intervalId)
+              clearInterval(this.intervalId)
             }
           },1000)
         }
         //发送ajax请求
+        const result = await reqSendCode(this.phone)
+        if (result.code === 1){
+          this.showAlert(result.msg)
+          if (this.computeTime){
+            this.computeTime = 0
+            clearInterval(this.intervalId)
+            this.intervalId = undefined
+          }
+        }
       },
       //提示框
       showAlert(text){
@@ -106,7 +116,7 @@
         this.alertText = text
       },
       //前台验证表单
-      check(){//前台验证表单数据
+      login(){//前台验证表单数据
         if(this.loginWay){//短信登录
           const {phone,rightPhone,code} = this
           if(!rightPhone){

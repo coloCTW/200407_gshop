@@ -116,25 +116,53 @@
         this.alertText = text
       },
       //前台验证表单
-      login(){//前台验证表单数据
+      async login(){//前台验证表单数据
+
+        let result
         if(this.loginWay){//短信登录
           const {phone,rightPhone,code} = this
           if(!rightPhone){
             this.showAlert('手机格式不正确')
+            return
           }else if(!/^\d{6}$/.test(code)){
             //验证码必须是6位
             this.showAlert('验证码格式不正确')
+            return
           }
+          result = await reqSmsLogin(phone,code)
         }else{//密码登录
           const {name,pwd,captcha} = this
           if(!name){
             this.showAlert('用户名必须指定')
+            return
           }else if(!pwd){
             this.showAlert('密码必须指定')
+            return
           }else if(!captcha){
             this.showAlert('验证码必须指定')
+            return
           }
+          result = await reqPwdLogin({name,pwd,captcha})
+          console.log(result)
+
         }
+        if (this.computeTime){
+          this.computeTime = 0
+          clearInterval(this.intervalId)
+          this.intervalId = undefined
+        }
+        if(result.code===0){
+          //保存用户信息
+          //跳转页面
+          alert('111')
+          this.$router.replace('/profile')
+
+        }else {
+          const msg = result.msg
+          this.showAlert(msg)
+        }
+
+
       },
       //关闭提示框
       closeTip(){

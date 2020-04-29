@@ -42,7 +42,7 @@
                 </section>
                 <section class="login_message">
                   <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                  <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha">
+                  <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha" ref="captcha">
                 </section>
               </section>
             </div>
@@ -143,21 +143,25 @@
             return
           }
           result = await reqPwdLogin({name,pwd,captcha})
-          console.log(result)
+
 
         }
+        //停止计时
         if (this.computeTime){
           this.computeTime = 0
           clearInterval(this.intervalId)
           this.intervalId = undefined
         }
         if(result.code===0){
-          //保存用户信息
-          //跳转页面
-          alert('111')
+          //将user保存到vues的state
+          const user = result.data
+          console.log(user)
+          this.$store.dispatch('recordUserInfo',user)
+          //去个人中心界面
           this.$router.replace('/profile')
 
         }else {
+          this.getCaptcha()
           const msg = result.msg
           this.showAlert(msg)
         }
@@ -170,8 +174,8 @@
         this.alertText = ''
       },
       //密码登录获取验证码
-      getCaptcha(event){
-        event.target.src = 'http://localhost:4000/captcha?time=' + Date.now()
+      getCaptcha(){
+        this.$refs.captcha.src = 'http://localhost:4000/captcha?time=' + Date.now()
       }
     }
   }

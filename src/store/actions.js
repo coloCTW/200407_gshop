@@ -5,12 +5,15 @@ import {
   RECEIVE_ADDRESS,
   RECEIVE_CATEGORYS,
   RECEIVE_SHOPS,
-  RECEIVE_USER_INFO
+  RECEIVE_USER_INFO,
+  RESET_USER_INFO
 }from './mutation-types'
 import {
   reqAddress,
   reqFoodCategorys,
-  reqShops
+  reqShops,
+  reqUser,
+  reqLogout
 }from '../api'
 export default {
   //异步获取地址
@@ -45,8 +48,25 @@ export default {
       commit(RECEIVE_SHOPS, {shops})
     }
   },
-  //同步记录用户信息
+  //同步记录用户信息（如果需要向后台获取的是异步，前台本身就有的数据是同步）
   recordUserInfo({commit}, userInfo){
     commit(RECEIVE_USER_INFO, {userInfo})
   },
+
+  //异步获取用户信息
+  async getUserInfo({commit}){
+    const result = await reqUser()
+    if(result.code === 0){
+      const userInfo = result.data
+      commit(RECEIVE_USER_INFO, {userInfo})
+    }
+  },
+
+  //异步登出用户信息
+  async logout({commit}){
+    const result = await reqLogout()
+    if(result.code === 0){
+      commit(RESET_USER_INFO)
+    }
+  }
 }

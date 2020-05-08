@@ -1,6 +1,7 @@
 /**
  * 直接更新state的多个方法的对象
  */
+import Vue from 'vue'
 import {
   RECEIVE_ADDRESS,
   RECEIVE_CATEGORYS,
@@ -9,7 +10,9 @@ import {
   RESET_USER_INFO,
   RECEIVE_INFO,
   RECEIVE_RATINGS,
-  RECEIVE_GOODS
+  RECEIVE_GOODS,
+  INCREMENT_FOOD_COUNT,
+  DECREMENT_FOOD_COUNT
 }from './mutation-types'
 export default {
   [RECEIVE_ADDRESS] (state, {address}){
@@ -35,5 +38,30 @@ export default {
   },
   [RECEIVE_GOODS](state, {goods}) {
     state.goods = goods
+  },
+  [INCREMENT_FOOD_COUNT](state, {food}) {
+    if(!food.count){
+      //food.count = 1 //不能实现数据绑定
+      /*
+      *对象
+      * 属性名
+      * 属性值
+      */
+      Vue.set(food,'count',1)
+      //将food添加到cartFoods
+      state.cartFoods.push(food)
+    }else{
+      food.count++
+    }
+  },
+  [DECREMENT_FOOD_COUNT](state, {food}) {
+    if(food.count){
+      food.count--
+      //移除cartFoods中的food
+      if(food.count===0){
+        state.cartFoods.splice(state.cartFoods.indexOf(food),1)
+      }
+    }
+
   },
 }

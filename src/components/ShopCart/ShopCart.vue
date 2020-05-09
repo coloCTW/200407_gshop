@@ -18,30 +18,37 @@
           </div>
         </div>
       </div>
-      <div class="shopcart-list" v-if="isShow">
-        <div class="list-header">
-          <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
+      <transition name="move">
+        <div class="shopcart-list" v-if="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty">清空</span>
+          </div>
+          <div class="list-content">
+            <ul>
+              <li class="food" v-for="(food,index) in cartFoods" :key="index">
+                <span class="name">{{food.name}}</span>
+                <div class="price"><span>￥{{food.price}}</span></div>
+                <div class="cartcontrol-wrapper">
+                  <CartControl :food="food"/>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="list-content">
-          <ul>
-            <li class="food" v-for="(food,index) in cartFoods" :key="index">
-              <span class="name">{{food.name}}</span>
-              <div class="price"><span>￥{{food.price}}</span></div>
-              <div class="cartcontrol-wrapper">
-                <CartControl :food="food"/>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+      </transition>
+
     </div>
-    <div class="list-mask" v-if="isShow" @click="toggleShow"></div>
+    <transition name="fade">
+      <div class="list-mask" v-if="listShow" @click="toggleShow"></div>
+    </transition>
+
   </div>
 </template>
 
 <script type="text/ecmascript-6">
     import {mapState,mapGetters} from 'vuex'
+    import BScroll from 'better-scroll'
     import CartControl from '../CartControl/CartControl.vue'
     export default {
       data(){
@@ -67,6 +74,26 @@
           const {totalCount,totalPrice} = this
           const {minPrice} = this.info
           return totalPrice>minPrice ? 'enough':'not-enough'
+        },
+        listShow(){
+          if(this.totalCount === 0){
+            this.isShow = false
+            return false
+          }
+          if(this.isShow){
+            this.$nextTick(()=>{
+              if(this.scroll){
+                this.scroll.destroy()
+              }
+              this.scroll = new BScroll('.list-content',{
+                click:true
+              })
+
+
+            })
+
+          }
+          return this.isShow
         }
       },
       components:{
@@ -74,7 +101,10 @@
       },
       methods:{
         toggleShow(){
-          this.isShow = !this.isShow
+          if(this.totalCount){
+            this.isShow = !this.isShow
+          }
+
         }
       }
     }

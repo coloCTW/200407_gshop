@@ -19,7 +19,7 @@
         </div>
       </div>
       <transition name="move">
-        <div class="shopcart-list" v-if="listShow">
+        <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
             <span class="empty" @click="clearCart">清空</span>
@@ -83,14 +83,13 @@
           }
           if(this.isShow){
             this.$nextTick(()=>{
-              if(this.scroll){
-                this.scroll.destroy()
+              if(!this.scroll) {
+                this.scroll = new BScroll('.list-content', {
+                  click: true
+                })
+              } else {
+                this.scroll.refresh() // 让滚动条刷新一下: 重新统计内容的高度
               }
-              this.scroll = new BScroll('.list-content',{
-                click:true
-              })
-
-
             })
 
           }

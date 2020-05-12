@@ -89,6 +89,7 @@
           })
         })
       })
+
     },
     methods:{
       setRatingType(showRatingType){

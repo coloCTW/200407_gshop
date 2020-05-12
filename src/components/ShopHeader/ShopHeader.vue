@@ -5,9 +5,9 @@
         <i class="iconfont icon-arrow_left"></i>
       </a>
     </nav>
-    <div class="shop-content">
+    <div class="shop-content" @click="toggleShopShow">
       <img class="content-image" :src="info.avatar">
-      <div class="header-content" @click="toggleShopShow">
+      <div class="header-content">
         <h2 class="content-title">
           <span class="content-tag">
             <span class="mini-tag">品牌</span>

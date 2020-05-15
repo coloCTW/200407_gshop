@@ -64,7 +64,7 @@
       }
     },
     computed:{
-      ...mapState(['goods']),
+      ...mapState(['goods','cartFoods']),
       currentIndex(){ //计算当前分类
         const {scrollY,tops} = this
         const index = tops.findIndex((top,index)=>{
@@ -76,10 +76,47 @@
     },
     mounted(){
       this.$store.dispatch('getShopGoods',()=>{
-          this.$nextTick(()=>{ //界面更新后执行
-            this._initScroll()
-            this._initTops()
-          })
+        this.$nextTick(()=>{ //界面更新后执行
+          this._initScroll()
+          this._initTops()
+        })
+
+
+        const {cartFoods,goods} = this
+//        if(cartFoods.length){
+//          goods[0].foods[0] = cartFoods[0]
+//        }
+
+
+
+
+
+        if(cartFoods.length){
+          let p=[]
+
+          try{
+            cartFoods.forEach((cartFood,i)=>{
+              goods.forEach((good,j)=>{
+                good.foods.forEach((food,k)=>{
+                  if(food.name === cartFood.name){
+                    goods[j].foods[k]=cartFoods[i]
+                    throw Error();
+                  }
+                })
+              })
+
+            })
+          }catch(e){
+              return
+          }
+
+
+
+        }
+        if(cartFoods.length){
+          console.log('1111')
+        }
+
       })
     },
     methods:{

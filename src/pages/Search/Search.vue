@@ -1,53 +1,68 @@
 <template>
   <section class="search">
     <HeaderTop title="搜索"/>
-    <form class="search_form">
-      <input type="search" placeholder="请输入商家名称" class="search_input">
+    <form class="search_form" @submit.prevent="search">
+      <input type="search" placeholder="请输入商家名称" class="search_input" v-model="keyword">
       <input type="submit" class="search_submit">
     </form>
-    <section class="list">
+    <section class="list" v-if="!noSearchShops">
       <ul class="list_container">
-        <li class="list_li">
+        <!--:to="'/shop?id='+item.id"-->
+        <router-link :to="{path:'/shop', query:{id:item.id}}" tag="li"
+                     v-for="item in searchShops" :key="item.id" class="list_li">
           <section class="item_left">
-            <img src="http://cangdu.org:8001/img/16265a70fe27854.jpg"
-                 class="restaurant_img">
+            <img :src="imgBaseUrl + item.image_path" class="restaurant_img">
           </section>
           <section class="item_right">
             <div class="item_right_text">
               <p>
-                <span>aaa</span>
+                <span>{{item.name}}</span>
               </p>
-              <p>月售 671 单</p>
-              <p>20 元起送 / 距离 1058.2 公里</p>
+              <p>月售 {{item.month_sales||item.recent_order_num}} 单</p>
+              <p>{{item.delivery_fee||item.float_minimum_order_amount}} 元起送 / 距离{{item.distance}}</p>
             </div>
           </section>
-        </li>
-        <li class="list_li">
-          <section class="item_left">
-            <img src="http://cangdu.org:8001/img/16265a70fe27854.jpg"
-                 class="restaurant_img">
-          </section>
-          <section class="item_right">
-            <div class="item_right_text">
-              <p>
-                <span>aaa</span>
-              </p>
-              <p>月售 671 单</p>
-              <p>20 元起送 / 距离 1058.2 公里</p>
-            </div>
-          </section>
-        </li>
+        </router-link>
       </ul>
     </section>
+    <div class="search_none" v-else>很抱歉！无搜索结果</div>
   </section>
 </template>
 
 
 <script type="text/ecmascript-6">
   import HeaderTop from '../../components/HeaderTop/HeaderTop.vue'
+  import {mapState} from 'vuex'
   export default{
+    data(){
+      return{
+        keyword:'',
+        imgBaseUrl:'http://cangdu.org:8001/img/',
+        noSearchShops: false
+      }
+    },
     components:{
       HeaderTop
+    },
+    computed:{
+      ...mapState(['searchShops'])
+    },
+    methods:{
+      search(){
+
+        const keyword = this.keyword.trim()
+        if(keyword){
+          this.noSearchShops = false
+          this.$store.dispatch('getSearchShop',keyword)
+        }
+      }
+    },
+    watch:{
+      searchShops(value){
+        if(!value.length){
+          this.noSearchShops = true
+        }
+      }
     }
   }
 </script>

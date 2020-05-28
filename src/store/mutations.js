@@ -42,28 +42,62 @@ export default {
     state.goods = goods
   },
   [INCREMENT_FOOD_COUNT](state, {food}) {
-    if(!food.count){
-      //food.count = 1 //不能实现数据绑定
-      /*
-      *对象
-      * 属性名
-      * 属性值
-      */
-      Vue.set(food,'count',1)
-      //将food添加到cartFoods
+
+    const aim = []
+    state.goods.forEach(good=>{ //找出所有同名的食物，放进数组
+      good.foods.forEach(candidatefood=>{
+        if(candidatefood.name === food.name){
+          aim.push(candidatefood)
+        }
+      })
+    })
+    aim.forEach(aimfood=>{ //给所有同名食物加数量
+      if(!aimfood.count){
+        //food.count = 1 //不能实现数据绑定
+        /*
+         *对象
+         * 属性名
+         * 属性值
+         */
+        Vue.set(aimfood,'count',1)
+        //将food添加到cartFoods
+
+
+      }else{
+        aimfood.count++
+      }
+    })
+    let isAdd = true
+    state.cartFoods.forEach(cartFood=>{
+      if(cartFood.name === food.name){
+        isAdd = false
+      }
+    })
+
+    if (isAdd){
       state.cartFoods.push(food)
-    }else{
-      food.count++
     }
+
   },
   [DECREMENT_FOOD_COUNT](state, {food}) {
-    if(food.count){
-      food.count--
-      //移除cartFoods中的food
-      if(food.count===0){
-        state.cartFoods.splice(state.cartFoods.indexOf(food),1)
+    const aim = []
+    state.goods.forEach(good=>{
+      good.foods.forEach(candidatefood=>{
+        if(candidatefood.name === food.name){
+          aim.push(candidatefood)
+        }
+      })
+    })
+    aim.forEach(aimfood=>{
+      if(aimfood.count){
+        aimfood.count--
       }
+    })
+    //移除cartFoods中的food
+    if(food.count===0){
+      state.cartFoods.splice(state.cartFoods.indexOf(food),1)
     }
+
   },
   [CLEAR_CART](state) {
     //清空foods里面的count

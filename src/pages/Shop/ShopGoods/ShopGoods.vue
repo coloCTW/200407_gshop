@@ -51,6 +51,7 @@
 
 <script type="text/ecmascript-6">
   import {mapState} from 'vuex'
+  import Vue from 'vue'
   import BScroll from 'better-scroll'
   import CartControl from '../../../components/CartControl/CartControl.vue'
   import Food from '../../../components/Food/Food.vue'
@@ -83,38 +84,26 @@
 
 
         const {cartFoods,goods} = this
-//        if(cartFoods.length){
-//          goods[0].foods[0] = cartFoods[0]
-//        }
-
-
-
-
 
         if(cartFoods.length){
-          let p=[]
 
-          try{
-            cartFoods.forEach((cartFood,i)=>{
-              goods.forEach((good,j)=>{
-                good.foods.forEach((food,k)=>{
-                  if(food.name === cartFood.name){
-                    goods[j].foods[k]=cartFoods[i]
-                    throw Error();
+          for (let k=0;k<cartFoods.length;k++){
+            let f = 0
+            for (let i=0;i<goods.length;i++){
+              for (let j=0;j<goods[i].foods.length;j++){
+                if (goods[i].foods[j].name===cartFoods[k].name){
+                  if (f){ //将第一个同名食物关联购物车中的食物，之后出现的同名食物添加数量属性
+                    //goods[i].foods[j].count = cartFoods[k].count
+                    //无法实现数据绑定：数据改变了但是界面没有改变
+                    Vue.set(goods[i].foods[j],'count',cartFoods[k].count)
+                  }else{
+                    goods[i].foods[j]=cartFoods[k]
+                    f++
                   }
-                })
-              })
-
-            })
-          }catch(e){
-              return
+                }
+              }
+            }
           }
-
-
-
-        }
-        if(cartFoods.length){
-          console.log('1111')
         }
 
       })
@@ -169,7 +158,8 @@
       CartControl,
       Food,
       ShopCart
-    }
+    },
+
 
   }
 </script>
